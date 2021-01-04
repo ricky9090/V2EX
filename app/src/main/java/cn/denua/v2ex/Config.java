@@ -13,15 +13,11 @@ import android.support.annotation.Nullable;
 
 import com.blankj.utilcode.util.ToastUtils;
 import com.google.gson.Gson;
-import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -46,14 +42,14 @@ public class Config {
      */
     private static Configuration mConfig;
 
-    public static final ArrayList<Tab> HOME_TAB_DEFAULT = new ArrayList<Tab>(){{
-        add(new Tab(TabEnum.LATEST,TabEnum.LATEST.getTitle(), "最 新"));
+    public static final ArrayList<Tab> HOME_TAB_DEFAULT = new ArrayList<Tab>() {{
+        add(new Tab(TabEnum.LATEST, TabEnum.LATEST.getTitle(), "最 新"));
         add(new Tab(TabEnum.HOT, TabEnum.HOT.getTitle(), "热 门"));
-        add(new Tab(TabEnum.TAB,"技 术","tech"));
-        add(new Tab(TabEnum.TAB,"好 玩", "creative"));
+        add(new Tab(TabEnum.TAB, "技 术", "tech"));
+        add(new Tab(TabEnum.TAB, "好 玩", "creative"));
     }};
 
-    public static final ArrayList<Locale> LOCAL_LIST = new ArrayList<Locale>(){{
+    public static final ArrayList<Locale> LOCAL_LIST = new ArrayList<Locale>() {{
         add(Locale.CHINA);
         add(Locale.US);
         add(Locale.JAPAN);
@@ -63,74 +59,75 @@ public class Config {
         return sAccount;
     }
 
-    public static void setAccount(Account account){
+    public static void setAccount(Account account) {
         sAccount = account;
     }
 
     /**
      * 初始化配置, 从 SharedPreferences 文件中读取配置
+     *
      * @param context the context
      */
-    public static void init(Context context){
+    public static void init(Context context) {
 
-        if (mConfig == null){
+        if (mConfig == null) {
             mConfig = context.getResources().getConfiguration();
         }
         try {
             loadConfig(context);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            CrashReport.postCatchedException(e);
         }
         setNightTheme();
         restoreAccount();
     }
 
-    public static void saveState(Bundle bundle){
+    public static void saveState(Bundle bundle) {
 
     }
 
-    public static void restoreState(Bundle bundle){
+    public static void restoreState(Bundle bundle) {
 
     }
 
-    public static SharedPreferences getConfSP(){
+    public static SharedPreferences getConfSP() {
         return App.getApplication()
                 .getSharedPreferences(
                         ConfigRefEnum.CONFIG_PREFERENCE_SETTING_FILE.getKey(), Context.MODE_PRIVATE);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends Serializable> T getConfig(ConfigRefEnum key, @Nullable T defaultValue){
+    public static <T extends Serializable> T getConfig(ConfigRefEnum key, @Nullable T defaultValue) {
         T result = (T) CONFIG.get(key);
         return result == null ? defaultValue : result;
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T getConfig(ConfigRefEnum key){
+    public static <T> T getConfig(ConfigRefEnum key) {
         T result = (T) CONFIG.get(key);
-        if (result == null){
+        if (result == null) {
             result = (T) key.getDefaultValue();
         }
         return result;
     }
 
-    public static <T extends Serializable> void setConfig(ConfigRefEnum key, @Nullable T value){
+    public static <T extends Serializable> void setConfig(ConfigRefEnum key, @Nullable T value) {
 
         CONFIG.put(key, value);
     }
 
-    public static Configuration getConfiguration(){
+    public static Configuration getConfiguration() {
         return mConfig;
     }
+
     /**
      * 将用户信息 (Account) 以 json 的形式持久化
      *
      * @param context the context
      */
-    public static void persistentAccount(Context context){
+    public static void persistentAccount(Context context) {
 
-        SharedPreferences.Editor editor= context.getSharedPreferences(
+        SharedPreferences.Editor editor = context.getSharedPreferences(
                 ConfigRefEnum.KEY_FILE_CONFIG_PREF.getKey(), Context.MODE_PRIVATE).edit();
         String gsonAccount = new Gson().toJson(sAccount);
         editor.putString(ConfigRefEnum.KEY_ACCOUNT.getKey(), gsonAccount);
@@ -145,22 +142,22 @@ public class Config {
             SharedPreferences editor = App.getApplication().getSharedPreferences(
                     ConfigRefEnum.KEY_FILE_CONFIG_PREF.getKey(), Context.MODE_PRIVATE);
             sAccount = new Gson().fromJson(editor.getString(
-                    ConfigRefEnum.KEY_ACCOUNT.getKey(),null), Account.class);
-            if (sAccount == null){
+                    ConfigRefEnum.KEY_ACCOUNT.getKey(), null), Account.class);
+            if (sAccount == null) {
                 sAccount = new Account();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private static void loadConfig(@NonNull Context context){
+    private static void loadConfig(@NonNull Context context) {
 
         SharedPreferences preferences = context.getSharedPreferences(
                 (String) Config.getConfig(ConfigRefEnum.CONFIG_PREFERENCE_SETTING_FILE),
                 Context.MODE_PRIVATE);
         Map<String, ?> pref = preferences.getAll();
-        for (ConfigRefEnum refEnum:ConfigRefEnum.values()){
+        for (ConfigRefEnum refEnum : ConfigRefEnum.values()) {
             String key = refEnum.getKey();
             CONFIG.put(refEnum, pref.get(key) != null
                     ? (Serializable) pref.get(key)
@@ -168,12 +165,12 @@ public class Config {
         }
         Set<String> homeTabs = preferences.getStringSet(
                 ConfigRefEnum.CONFIG_HOME_TAB.getKey(), null);
-        if (homeTabs == null){
+        if (homeTabs == null) {
             CONFIG.put(ConfigRefEnum.CONFIG_HOME_TAB, HOME_TAB_DEFAULT);
             return;
         }
         ArrayList<Tab> tabEnums = new ArrayList<>();
-        for (String tab:homeTabs){
+        for (String tab : homeTabs) {
             Tab tab1 = new Gson().fromJson(tab, Tab.class);
             tabEnums.add(tab1);
         }
@@ -185,18 +182,18 @@ public class Config {
                 * Float.valueOf(Config.getConfig(ConfigRefEnum.CONFIG_UI_SCALE)));
     }
 
-    private static void setNightTheme(){
-        if (getConfig(ConfigRefEnum.CONFIG_AUTO_NIGHT_THEME)){
+    private static void setNightTheme() {
+        if (getConfig(ConfigRefEnum.CONFIG_AUTO_NIGHT_THEME)) {
             String[] autoNightThemeTime =
-                    ((String)getConfig(ConfigRefEnum.CONFIG_AUTO_NIGHT_TIME)).split("_");
+                    ((String) getConfig(ConfigRefEnum.CONFIG_AUTO_NIGHT_TIME)).split("_");
             if (autoNightThemeTime.length == 2
                     && TimeUtil.isNowBetweenTimeSpanOfDay(
-                            autoNightThemeTime[0], autoNightThemeTime[1])){
+                    autoNightThemeTime[0], autoNightThemeTime[1])) {
                 ToastUtils.showShort(
                         "黑暗主题已启用, " + autoNightThemeTime[0] + "-" + autoNightThemeTime[1]);
                 String theme = getConfig(ConfigRefEnum.CONFIG_USE_BLACK_THEME)
-                        ? "BlackTheme":"DarkTheme";
-                setConfig(ConfigRefEnum.CONFIG_THEME,theme);
+                        ? "BlackTheme" : "DarkTheme";
+                setConfig(ConfigRefEnum.CONFIG_THEME, theme);
             }
         }
     }

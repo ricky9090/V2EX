@@ -5,7 +5,6 @@
 package cn.denua.v2ex.service;
 
 import com.orhanobut.logger.Logger;
-import com.tencent.bugly.crashreport.CrashReport;
 
 import java.util.regex.Pattern;
 
@@ -50,8 +49,8 @@ public enum ErrorEnum {
         return readable;
     }
 
-    public void check(String src) throws VException{
-        if (readable.isEmpty()){
+    public void check(String src) throws VException {
+        if (readable.isEmpty()) {
             String error = HtmlUtil.matcherGroup1(Pattern.compile(pattern), src);
             if (error.isEmpty()) return;
             VException vException = new VException(error);
@@ -59,14 +58,13 @@ public enum ErrorEnum {
             vException.setReference(src);
             throw vException;
         }
-        if (src.contains(pattern)){
+        if (src.contains(pattern)) {
             throw new VException(readable);
         }
     }
 
-    public void throwThis() throws VException{
+    public void throwThis() throws VException {
         VException vException = new VException(readable);
-        CrashReport.postCatchedException(vException);
         throw vException;
     }
 }

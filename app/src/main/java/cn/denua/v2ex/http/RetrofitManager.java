@@ -32,9 +32,9 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 public class RetrofitManager {
 
     public static boolean DEBUG = false;
-    private static final long READ_TIMEOUT = 5000L;
-    private static final long WRITE_TIMEOUT = 5000L;
-    private static final long CONNECT_TIMEOUT = 5000L;
+    private static final long READ_TIMEOUT = 10000L;
+    private static final long WRITE_TIMEOUT = 10000L;
+    private static final long CONNECT_TIMEOUT = 10000L;
 
     private static final String         BASE_URL = "https://www.v2ex.com/";
     private static final List<String>   VERIFIED_HOST = new ArrayList<String>(){{
@@ -71,12 +71,12 @@ public class RetrofitManager {
                 .addInterceptor(HeadersInterceptor.getInstance())
                 .hostnameVerifier((hostname, session) -> VERIFIED_HOST.contains(hostname));
 
-        if (!DEBUG){
+        /*if (!DEBUG){
             X509TrustManager trustManager = HttpsUtil.getX509TrustManager(context);
             okHttpClientBuilder.sslSocketFactory(
                     HttpsUtil.getSslSocketFactory(trustManager),
                     trustManager);
-        }
+        }*/
         sGson = new GsonBuilder()
                 .serializeNulls()
                 .disableHtmlEscaping()

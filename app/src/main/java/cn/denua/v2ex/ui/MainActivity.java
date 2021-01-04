@@ -5,8 +5,6 @@
 package cn.denua.v2ex.ui;
 
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
@@ -21,38 +19,29 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.ToastUtils;
 import com.bumptech.glide.Glide;
-import com.orhanobut.logger.Logger;
-import com.tencent.bugly.crashreport.CrashReport;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.denua.v2ex.Config;
 import cn.denua.v2ex.ConfigRefEnum;
 import cn.denua.v2ex.R;
 import cn.denua.v2ex.Tab;
-import cn.denua.v2ex.TabEnum;
 import cn.denua.v2ex.adapter.MainPagerAdapter;
-import cn.denua.v2ex.adapter.TabSelectAdapter;
 import cn.denua.v2ex.base.BaseNetworkActivity;
 import cn.denua.v2ex.fragment.TopicFragment;
 import cn.denua.v2ex.http.RetrofitManager;
 import cn.denua.v2ex.interfaces.ResponseListener;
 import cn.denua.v2ex.model.Account;
-import cn.denua.v2ex.model.Node;
 import cn.denua.v2ex.service.RxObserver;
 import cn.denua.v2ex.service.UserService;
-import cn.denua.v2ex.Config;
 import cn.denua.v2ex.utils.DialogUtil;
 import io.reactivex.Observable;
 
@@ -101,14 +90,14 @@ public class MainActivity extends BaseNetworkActivity implements NavigationView.
         mAccount = Config.getAccount();
         ButterKnife.bind(this);
         initView();
-        if (mAccount.isLogin()){
+        if (mAccount.isLogin()) {
             checkDailySignIn();
-        }else{
+        } else {
             checkLoginAndSignStatus();
         }
     }
 
-    protected void initView(){
+    protected void initView() {
         super.initView();
 
         setSupportActionBar(toolbar);
@@ -116,7 +105,7 @@ public class MainActivity extends BaseNetworkActivity implements NavigationView.
         tabLayout.setupWithViewPager(viewPager);
 
         ArrayList<Tab> tabEnums = Config.getConfig(ConfigRefEnum.CONFIG_HOME_TAB);
-        for (Tab s:tabEnums){
+        for (Tab s : tabEnums) {
             tabLayout.addTab(tabLayout.newTab());
             topicFragments.add(TopicFragment.create(s));
         }
@@ -128,7 +117,7 @@ public class MainActivity extends BaseNetworkActivity implements NavigationView.
         viewPager.setAdapter(new MainPagerAdapter(getSupportFragmentManager(), topicFragments));
 
         ivUserPic = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.iv_user_pic);
-        tvUserName = (TextView ) navigationView.getHeaderView(0).findViewById(R.id.tv_username);
+        tvUserName = (TextView) navigationView.getHeaderView(0).findViewById(R.id.tv_username);
         tvBalance = (TextView) navigationView.getHeaderView(0).findViewById(R.id.balance);
 
         miLogin = navigationView.getMenu().findItem(R.id.it_login_out);
@@ -138,16 +127,16 @@ public class MainActivity extends BaseNetworkActivity implements NavigationView.
         ivUserPic.setImageResource(R.drawable.ic_offline);
         tvUserName.setText(getResources().getText(R.string.click_to_login));
         ivUserPic.setOnClickListener(v -> {
-            if (!mAccount.isLogin()){
+            if (!mAccount.isLogin()) {
                 onNavItemUserStatusClick();
-            }else{
+            } else {
                 UserDetailActivity.start(this, mAccount);
             }
         });
         tvUserName.setOnClickListener(v -> {
-            if (!mAccount.isLogin()){
+            if (!mAccount.isLogin()) {
                 onNavItemUserStatusClick();
-            } else{
+            } else {
                 UserDetailActivity.start(this, mAccount);
             }
         });
@@ -188,10 +177,10 @@ public class MainActivity extends BaseNetworkActivity implements NavigationView.
     @Override
     public void onBackPressed() {
 
-        if (drawerLayout.isDrawerOpen(Gravity.START)){
+        if (drawerLayout.isDrawerOpen(Gravity.START)) {
             drawerLayout.closeDrawer(Gravity.START);
-        }else{
-            if ((System.currentTimeMillis() - mLatestBackPressed) < 1000){
+        } else {
+            if ((System.currentTimeMillis() - mLatestBackPressed) < 1000) {
                 finish();
                 Observable.timer(500, TimeUnit.MILLISECONDS).subscribe(new RxObserver<Long>() {
                     @Override
@@ -199,7 +188,7 @@ public class MainActivity extends BaseNetworkActivity implements NavigationView.
                         System.exit(0);
                     }
                 });
-            }else{
+            } else {
                 mLatestBackPressed = System.currentTimeMillis();
                 ToastUtils.showShort("再按一次返回键退出");
             }
@@ -208,7 +197,7 @@ public class MainActivity extends BaseNetworkActivity implements NavigationView.
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.search:
                 DialogUtil.showInputDialog(this, "查看话题", "输入话题ID", "", value ->
                         TopicActivity.start(MainActivity.this, Integer.valueOf(value)));
@@ -225,7 +214,7 @@ public class MainActivity extends BaseNetworkActivity implements NavigationView.
      */
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.it_settings:
                 startActivity(new Intent(this, SettingsActivity.class));
                 finish();
@@ -250,7 +239,8 @@ public class MainActivity extends BaseNetworkActivity implements NavigationView.
             case R.id.it_feedback:
                 feedBack();
                 break;
-            default:break;
+            default:
+                break;
         }
         drawerLayout.closeDrawer(Gravity.START);
         return false;
@@ -259,7 +249,7 @@ public class MainActivity extends BaseNetworkActivity implements NavigationView.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode){
+        switch (requestCode) {
             case LOGIN_REQUEST_CODE:
                 onActivityResultLogin(resultCode);
                 break;
@@ -268,9 +258,9 @@ public class MainActivity extends BaseNetworkActivity implements NavigationView.
         }
     }
 
-    private void onActivityResultLogin(int resultCode){
+    private void onActivityResultLogin(int resultCode) {
 
-        if (resultCode == LoginActivity.RESULT_SUCCESS){
+        if (resultCode == LoginActivity.RESULT_SUCCESS) {
             mAccount = Config.getAccount();
             setUserStatus();
             checkDailySignIn();
@@ -280,9 +270,9 @@ public class MainActivity extends BaseNetworkActivity implements NavigationView.
     /**
      * 签到
      */
-    private void signIn(){
+    private void signIn() {
 
-        if (!mAccount.isLogin() || sSignIn < 0){
+        if (!mAccount.isLogin() || sSignIn < 0) {
             return;
         }
         UserService.signIn(false, new ResponseListener<Integer>() {
@@ -292,6 +282,7 @@ public class MainActivity extends BaseNetworkActivity implements NavigationView.
                 sSignIn = result;
                 updateMenu();
             }
+
             @Override
             public boolean onFailed(String msg) {
                 ToastUtils.showShort(msg);
@@ -303,16 +294,16 @@ public class MainActivity extends BaseNetworkActivity implements NavigationView.
     /**
      * 改变用户登录状态
      */
-    private void onNavItemUserStatusClick(){
+    private void onNavItemUserStatusClick() {
 
-        if (!mAccount.isLogin()){
+        if (!mAccount.isLogin()) {
             startActivityForResult(new Intent(this, LoginActivity.class),
                     LOGIN_REQUEST_CODE);
             return;
         }
         DialogUtil.showMessage(this,
                 getString(R.string.alert), getString(R.string.are_you_sure_logout), value -> {
-                    if (value){
+                    if (value) {
                         logout();
                     }
                 });
@@ -321,7 +312,7 @@ public class MainActivity extends BaseNetworkActivity implements NavigationView.
     /**
      * 用户登出, 清理并更新相关状态
      */
-    private void logout(){
+    private void logout() {
 
         mAccount.logout();
         mAccount = new Account();
@@ -335,16 +326,16 @@ public class MainActivity extends BaseNetworkActivity implements NavigationView.
     /**
      * 设置用户状态, 根据是否已经登录改变左侧导航菜单的 HeaderView
      */
-    private void setUserStatus(){
+    private void setUserStatus() {
 
-        if (mAccount.isLogin()){
+        if (mAccount.isLogin()) {
             miLogin.setIcon(R.drawable.ic_logout);
             miLogin.setEnabled(true);
             miLogin.setVisible(true);
             Glide.with(this).load(mAccount.getAvatar_large()).into(ivUserPic);
             tvUserName.setText(mAccount.getUsername());
             tvBalance.setText(String.valueOf(mAccount.getBalance()));
-        }else{
+        } else {
             tvUserName.setText(R.string.click_to_login);
             miLogin.setVisible(false);
             miLogin.setEnabled(false);
@@ -357,15 +348,15 @@ public class MainActivity extends BaseNetworkActivity implements NavigationView.
     /**
      * 更新左侧导航栏 item
      */
-    private void updateMenu(){
+    private void updateMenu() {
 
-        if (sSignIn == 0){
+        if (sSignIn == 0) {
             miSignIn.setTitle(R.string.checked);
-        }else {
+        } else {
             miSignIn.setTitle("已签到");
         }
         boolean enabled = sSignIn >= 0;
-        TextView tvSignIn =  (TextView) miSignIn.getActionView().findViewById(R.id.tv_badge_msg);
+        TextView tvSignIn = (TextView) miSignIn.getActionView().findViewById(R.id.tv_badge_msg);
         tvSignIn.setText(String.valueOf(Math.abs(mAccount.getSign())));
         miSignIn.setEnabled(enabled);
         miSignIn.setCheckable(enabled);
@@ -381,7 +372,7 @@ public class MainActivity extends BaseNetworkActivity implements NavigationView.
      * 检查并更新登录状态和签到状态
      * 尝试获取用户信息页面, 如果成功则检查签到状态
      */
-    private void checkLoginAndSignStatus(){
+    private void checkLoginAndSignStatus() {
 
         UserService.getInfo(new ResponseListener<Account>() {
             @Override
@@ -389,6 +380,7 @@ public class MainActivity extends BaseNetworkActivity implements NavigationView.
                 mAccount.logout();
                 return true;
             }
+
             @Override
             public void onComplete(Account result) {
                 Config.setAccount(result);
@@ -401,19 +393,20 @@ public class MainActivity extends BaseNetworkActivity implements NavigationView.
     /**
      * 检查每日签到状态
      */
-    private void checkDailySignIn(){
+    private void checkDailySignIn() {
 
         UserService.signIn(true, new ResponseListener<Integer>() {
             @Override
             public void onComplete(Integer result) {
                 sSignIn = result;
                 mAccount.setSign(result);
-                if (sSignIn >= 0){
+                if (sSignIn >= 0) {
                     if (Config.getConfig(ConfigRefEnum.CONFIG_AUTO_CHECK)) signIn();
                 }
                 updateMenu();
                 setUserStatus();
             }
+
             @Override
             public boolean onFailed(String msg) {
                 ToastUtils.showShort(msg);
@@ -422,15 +415,14 @@ public class MainActivity extends BaseNetworkActivity implements NavigationView.
         });
     }
 
-    private void feedBack(){
+    private void feedBack() {
 
         DialogUtil.showInputDialog(this,
                 getString(R.string.feed_back),
                 getString(R.string.summary_feed_back),
                 "", value -> {
                     if ((null != value) && value.isEmpty()) return;
-                    CrashReport.postCatchedException(new Throwable("Feed back. " + value));
                     ToastUtils.showShort(getString(R.string.thanks));
-        });
+                });
     }
 }

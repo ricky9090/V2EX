@@ -4,8 +4,6 @@
 
 package cn.denua.v2ex.service;
 
-import com.tencent.bugly.crashreport.CrashReport;
-
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
@@ -18,42 +16,42 @@ public abstract class RxObserver<T> implements Observer<T> {
 
     private BaseService<?> mBaseService;
 
-    public RxObserver(){}
+    public RxObserver() {
+    }
 
-    RxObserver(BaseService<?> baseService){
+    RxObserver(BaseService<?> baseService) {
         this.mBaseService = baseService;
     }
+
     @Override
     public void onSubscribe(Disposable d) {
-        if (mBaseService!=null){
+        if (mBaseService != null) {
             mBaseService.onStartRequest();
         }
     }
 
-    public void onNext(T t){
-        if ( mBaseService != null && mBaseService.isCanceled())  return;
+    public void onNext(T t) {
+        if (mBaseService != null && mBaseService.isCanceled()) return;
 
-        if (t == null){
+        if (t == null) {
             _onError(ErrorEnum.ERR_EMPTY_RESPONSE.getReadable());
             return;
         }
-        if (t instanceof String){
+        if (t instanceof String) {
             if (((String) t).contains(ErrorEnum.ERR_PAGE_NEED_LOGIN.getPattern())
-                    || ((String) t).contains(ErrorEnum.ERR_PAGE_NEED_LOGIN0.getPattern())){
+                    || ((String) t).contains(ErrorEnum.ERR_PAGE_NEED_LOGIN0.getPattern())) {
                 _onError(ErrorEnum.ERR_PAGE_NEED_LOGIN.getReadable());
                 return;
             }
         }
         try {
             _onNext(t);
-        }catch (V2exException e){
+        } catch (V2exException e) {
             e.printStackTrace();
             _onError(e.getMsg());
-            CrashReport.postCatchedException(e);
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             e.printStackTrace();
             _onError(e.getMessage());
-            CrashReport.postCatchedException(e);
         }
     }
 
@@ -66,7 +64,6 @@ public abstract class RxObserver<T> implements Observer<T> {
     public void onError(Throwable e) {
         e.printStackTrace();
         _onError(e.getMessage());
-        CrashReport.postCatchedException(e);
     }
 
     @Override
@@ -81,8 +78,8 @@ public abstract class RxObserver<T> implements Observer<T> {
      *
      * @param msg 返回给 view 的错误消息
      */
-    public void _onError(String msg){
-        if (mBaseService != null){
+    public void _onError(String msg) {
+        if (mBaseService != null) {
             mBaseService.returnFailed(msg);
         }
     }

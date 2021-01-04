@@ -2,8 +2,6 @@ package cn.denua.v2ex.service;
 
 import android.support.annotation.CallSuper;
 
-import com.tencent.bugly.crashreport.CrashReport;
-
 import cn.denua.v2ex.interfaces.IResponsibleView;
 import cn.denua.v2ex.interfaces.ResponseListener;
 import io.reactivex.Observer;
@@ -14,7 +12,7 @@ public class RxObserver2<T> implements Observer<T> {
     private ResponseListener<T> mResponseListener;
     private IResponsibleView mResponsibleView;
 
-    public RxObserver2(IResponsibleView responsibleView, ResponseListener<T> responseListener){
+    public RxObserver2(IResponsibleView responsibleView, ResponseListener<T> responseListener) {
         this.mResponseListener = responseListener;
         this.mResponsibleView = responsibleView;
     }
@@ -29,7 +27,7 @@ public class RxObserver2<T> implements Observer<T> {
     @CallSuper
     @Override
     public void onNext(T t) {
-        if (isViewReady() && t != null){
+        if (isViewReady() && t != null) {
             mResponseListener.onComplete(t);
         }
     }
@@ -38,8 +36,7 @@ public class RxObserver2<T> implements Observer<T> {
     @Override
     public void onError(Throwable e) {
         e.printStackTrace();
-        CrashReport.postCatchedException(e);
-        if (isViewReady()){
+        if (isViewReady()) {
             mResponseListener.onFailed(e.getMessage());
             mResponsibleView.onFailMsg(e.getMessage());
         }
@@ -47,12 +44,12 @@ public class RxObserver2<T> implements Observer<T> {
 
     @Override
     public void onComplete() {
-        if (isViewReady()){
+        if (isViewReady()) {
             mResponsibleView.onCompleteRequest();
         }
     }
 
-    private boolean isViewReady(){
+    private boolean isViewReady() {
         return mResponsibleView.getContextStatus() == IResponsibleView.VIEW_STATUS_ACTIVATED;
     }
 }

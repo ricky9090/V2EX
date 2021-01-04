@@ -9,12 +9,10 @@ import android.os.Bundle;
 import com.blankj.utilcode.util.Utils;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
-import com.tencent.bugly.crashreport.CrashReport;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.denua.v2ex.base.BaseActivity;
 import cn.denua.v2ex.http.RetrofitManager;
 import cn.denua.v2ex.interfaces.Secret;
 
@@ -31,7 +29,12 @@ public class App extends Application implements Application.ActivityLifecycleCal
     public void onCreate() {
         super.onCreate();
         app = this;
-        mSecretConfig = new SecretImpl();
+        mSecretConfig = new Secret() { // FIXME
+            @Override
+            public void init(Context context) {
+
+            }
+        };
         mSecretConfig.init(this);
 
         Config.init(this);
@@ -45,21 +48,21 @@ public class App extends Application implements Application.ActivityLifecycleCal
         setFontScaleAndUiScale();
     }
 
-    public static Activity getPreActivity(Activity activity){
+    public static Activity getPreActivity(Activity activity) {
 
-        return  (mActivities.size() <= 1)
+        return (mActivities.size() <= 1)
                 ? null
                 : mActivities.get(mActivities.indexOf(activity) - 1);
     }
 
-    public static Activity getLatestActivity(){
+    public static Activity getLatestActivity() {
         return (mActivities.size() == 0)
                 ? null
                 : mActivities.get(mActivities.size() - 1);
     }
 
-    private void setFontScaleAndUiScale(){
-        if (mConfig == null){
+    private void setFontScaleAndUiScale() {
+        if (mConfig == null) {
             mConfig = getResources().getConfiguration();
             System.out.println((String) Config.getConfig(ConfigRefEnum.CONFIG_FONT_SCALE));
             mConfig.fontScale
@@ -71,7 +74,7 @@ public class App extends Application implements Application.ActivityLifecycleCal
         getResources().updateConfiguration(mConfig, getResources().getDisplayMetrics());
     }
 
-    public static Application getApplication(){
+    public static Application getApplication() {
         return app;
     }
 
