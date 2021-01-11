@@ -33,16 +33,13 @@ public class LoginActivity extends BaseNetworkActivity implements NextResponseLi
 
     public static final int RESULT_SUCCESS = 6;
 
-    @BindView(R.id.et_account)
+
     TextInputEditText etAccount;
-    @BindView(R.id.et_password)
     TextInputEditText etPassword;
-    @BindView(R.id.et_check_code)
     TextInputEditText etCaptchaCode;
-    @BindView(R.id.iv_captcha)
     ImageView ivCaptcha;
-    @BindView(R.id.progress_captcha)
     ProgressBar progressBar;
+
     private UserService loginService;
 
     private AlertDialog mProgressDialog;
@@ -52,6 +49,7 @@ public class LoginActivity extends BaseNetworkActivity implements NextResponseLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_login);
         ButterKnife.bind(this);
+        bindView();
 
         setTitle(R.string.login);
         mProgressDialog = DialogUtil.getProgress(this,
@@ -65,7 +63,28 @@ public class LoginActivity extends BaseNetworkActivity implements NextResponseLi
         etCaptchaCode.setOnKeyListener(onNextKey);
     }
 
-    @OnClick(R.id.bt_login)
+    private void bindView() {
+        etAccount = findViewById(R.id.et_account);
+        etPassword = findViewById(R.id.et_password);
+        etCaptchaCode = findViewById(R.id.et_check_code);
+        ivCaptcha = findViewById(R.id.iv_captcha);
+        progressBar = findViewById(R.id.progress_captcha);
+        findViewById(R.id.bt_login).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                login();
+            }
+        });
+
+        ivCaptcha.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                refresh(null);
+            }
+        });
+    }
+
+
     public void login(){
 
         String mAccount = etAccount.getText().toString().trim();
@@ -92,7 +111,7 @@ public class LoginActivity extends BaseNetworkActivity implements NextResponseLi
         mProgressDialog.show();
     }
 
-    @OnClick(R.id.iv_captcha)
+
     public void refresh(ImageView view){
         loginService.preLogin();
         ivCaptcha.setVisibility(View.GONE);

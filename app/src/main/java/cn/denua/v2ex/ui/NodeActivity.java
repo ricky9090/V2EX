@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,9 +19,6 @@ import com.blankj.utilcode.util.ToastUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cn.denua.v2ex.R;
 import cn.denua.v2ex.adapter.PullRefreshReplyAdapter;
 import cn.denua.v2ex.adapter.TopicRecyclerViewAdapter;
@@ -39,30 +37,30 @@ import cn.denua.v2ex.utils.ImageLoader;
  */
 public class NodeActivity extends BaseNetworkActivity {
 
-    @BindView(R.id.tv_node_title)
+
     TextView mTvTitle;
-    @BindView(R.id.tv_node_summary)
+
     TextView mTvSummary;
-    @BindView(R.id.tv_node_path)
+
     TextView mTvPath;
-    @BindView(R.id.tv_node_topic_count)
+
     TextView mTvTopicCount;
-    @BindView(R.id.tv_star)
+
     TextView mTvStar;
-    @BindView(R.id.tv_node_name)
+
     TextView mTvName;
 
-    @BindView(R.id.iv_node_avatar)
+
     ImageView mIvAvatar;
 
-    @BindView(R.id.rv_list)
+
     RecyclerView mRvList;
 
     private PullRefreshReplyAdapter mRefreshAdapter;
     private Node mNode;
 
     private int mCurrentPage = 1;
-    private int mPageCount =  0;
+    private int mPageCount = 0;
     private List<Topic> mTopic = new ArrayList<>();
 
     private ResponseListener<Node> mResponseListener = new ResponseListener<Node>() {
@@ -75,13 +73,14 @@ public class NodeActivity extends BaseNetworkActivity {
             String path = (result.getParent_node_name() != null
                     ? (result.getParent_node_name() + " > ")
                     : "") + result.getName();
-            mTvPath.setText( path);
+            mTvPath.setText(path);
             mTvStar.setText(String.format("收藏: %d".toLowerCase(), result.getStarts()));
             mTvTopicCount.setText(String.format("话题数: %d".toLowerCase(), result.getTopics()));
             ImageLoader.load(result.getAvatar_large(), mIvAvatar, NodeActivity.this);
             mTvName.setText(mNode.getTitle_alternative());
             mPageCount = result.getTopics() / 20;
         }
+
         @Override
         public boolean onFailed(String msg) {
             ToastUtils.showShort(msg);
@@ -94,10 +93,11 @@ public class NodeActivity extends BaseNetworkActivity {
         public void onComplete(List<Topic> result) {
             mTopic.addAll(result);
             mRefreshAdapter.setStatus(mPageCount == mCurrentPage
-                            ? PullRefreshReplyAdapter.FooterStatus.COMPLETE
-                            : PullRefreshReplyAdapter.FooterStatus.LOADING);
+                    ? PullRefreshReplyAdapter.FooterStatus.COMPLETE
+                    : PullRefreshReplyAdapter.FooterStatus.LOADING);
             mRefreshAdapter.notifyRangeChanged(mTopic.size() - result.size(), result.size());
         }
+
         @Override
         public boolean onFailed(String msg) {
             ToastUtils.showShort(msg);
@@ -105,7 +105,7 @@ public class NodeActivity extends BaseNetworkActivity {
         }
     };
 
-    public static void start(Context context, Node node){
+    public static void start(Context context, Node node) {
 
         Intent intent = new Intent(context, NodeActivity.class);
         intent.putExtra("node", node);
@@ -117,7 +117,7 @@ public class NodeActivity extends BaseNetworkActivity {
         super.onCreate(savedInstanceState);
         setNoToolbar();
         setContentView(R.layout.act_node);
-        ButterKnife.bind(this);
+        bindView();
 
         mNode = getIntent().getParcelableExtra("node");
 
@@ -125,13 +125,38 @@ public class NodeActivity extends BaseNetworkActivity {
                 this, new TopicRecyclerViewAdapter(this, mTopic));
         mRefreshAdapter.setBottomPadding(mNavBarHeight);
         mRefreshAdapter.setOnPullUpListener(() -> {
-            mCurrentPage ++;
+            mCurrentPage++;
             NodeService.getNodeTopicList(this, mTopicListener, mNode.getName(), mCurrentPage);
         });
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRvList.setLayoutManager(layoutManager);
         mRvList.setAdapter(mRefreshAdapter);
+    }
+
+    private void bindView() {
+        mTvTitle = findViewById(R.id.tv_node_title);
+
+        mTvSummary = findViewById(R.id.tv_node_summary);
+
+        mTvPath = findViewById(R.id.tv_node_path);
+
+        mTvTopicCount = findViewById(R.id.tv_node_topic_count);
+
+        mTvStar = findViewById(R.id.tv_star);
+
+        mTvName = findViewById(R.id.tv_node_name);
+
+        mIvAvatar = findViewById(R.id.iv_node_avatar);
+
+        mRvList = findViewById(R.id.rv_list);
+
+        findViewById(R.id.fb_follow).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                follow();
+            }
+        });
     }
 
     @Override
@@ -141,12 +166,12 @@ public class NodeActivity extends BaseNetworkActivity {
         NodeService.getNodeTopicList(this, mTopicListener, mNode.getName(), mCurrentPage);
     }
 
-    @OnClick(R.id.fb_follow)
-    public void follow(){
+
+    public void follow() {
         ToastUtils.showShort("follow");
     }
 
-    private void onRefresh(){
+    private void onRefresh() {
         NodeService.getNodeInfo(this, mResponseListener, mNode.getName());
     }
 }

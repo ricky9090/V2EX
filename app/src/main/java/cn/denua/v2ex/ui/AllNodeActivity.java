@@ -5,26 +5,18 @@
 package cn.denua.v2ex.ui;
 
 import android.Manifest;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.LinearLayout;
 
-import com.blankj.utilcode.constant.PermissionConstants;
 import com.blankj.utilcode.util.PermissionUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.orhanobut.logger.Logger;
 
-import java.security.Permission;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.denua.v2ex.R;
 import cn.denua.v2ex.adapter.NodeAdapter;
 import cn.denua.v2ex.base.BaseNetworkActivity;
@@ -40,10 +32,8 @@ import cn.denua.v2ex.widget.LabelLayoutManager;
  */
 public class AllNodeActivity extends BaseNetworkActivity implements ResponseListener<List<Node>> {
 
-    @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
 
-    @BindView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout mSwipeRefreshLayout;
 
     private NodeAdapter mNodeAdapter;
@@ -52,7 +42,7 @@ public class AllNodeActivity extends BaseNetworkActivity implements ResponseList
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_all_node);
-        ButterKnife.bind(this);
+        bindView();
 
         mRecyclerView.setNestedScrollingEnabled(false);
 //        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -65,6 +55,12 @@ public class AllNodeActivity extends BaseNetworkActivity implements ResponseList
         mSwipeRefreshLayout.setOnRefreshListener(this::onRefresh);
 
         PermissionUtils.permission(Manifest.permission.BLUETOOTH, Manifest.permission.LOCATION_HARDWARE).request();
+    }
+
+    private void bindView() {
+        mRecyclerView = findViewById(R.id.recycler_view);
+
+        mSwipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
     }
 
     @Override
@@ -105,7 +101,7 @@ public class AllNodeActivity extends BaseNetworkActivity implements ResponseList
         return false;
     }
 
-    public void onRefresh(){
+    public void onRefresh() {
 
     }
 }

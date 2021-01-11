@@ -23,8 +23,6 @@ import com.blankj.utilcode.util.ToastUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.denua.v2ex.R;
 import cn.denua.v2ex.adapter.MemberPagerAdapter;
 import cn.denua.v2ex.base.BaseNetworkActivity;
@@ -46,27 +44,21 @@ public class UserDetailActivity extends BaseNetworkActivity implements ResponseL
 
     private static final String EXTRA_MEMBER = "MEMBER";
 
-    @BindView(R.id.iv_user_pic)
     ImageView mIVUserPic;
-    @BindView(R.id.toolbar)
     Toolbar mToolbar;
-    @BindView(R.id.tab_pager)
     TabLayout mTabLayout;
-    @BindView(R.id.vp_content)
     ViewPager mViewPager;
-    @BindView(R.id.collapsing_toolbar)
     CollapsingToolbarLayout mCollapsingToolbar;
-    @BindView(R.id.tv_number_created)
     TextView mNumberCreated;
 
     private Member mMember;
     private MemberPagerAdapter mPagerAdapter;
     private List<Fragment> mMemberTopicFragments = new ArrayList<>();
 
-    public static void start(Context context, Member member){
+    public static void start(Context context, Member member) {
         Intent intent = new Intent(context, UserDetailActivity.class);
         intent.putExtra(EXTRA_MEMBER, (Parcelable) member);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         context.startActivity(intent);
     }
 
@@ -77,7 +69,7 @@ public class UserDetailActivity extends BaseNetworkActivity implements ResponseL
         setContentView(R.layout.act_user_detail);
 
         this.mMember = getIntent().getParcelableExtra(EXTRA_MEMBER);
-        ButterKnife.bind(this);
+        bindView();
         initView();
     }
 
@@ -86,12 +78,27 @@ public class UserDetailActivity extends BaseNetworkActivity implements ResponseL
         super.onStart();
 
         if (mMember.getCreated() == 0) {
-            new MemberService (this, this)
-                .getMemberDetail(mMember.getUsername());
-        }else {
+            new MemberService(this, this)
+                    .getMemberDetail(mMember.getUsername());
+        } else {
             mNumberCreated.setText(
-                    TimeUtil.timestampToStr(mMember.getCreated()*1000, "yyyy-MM-dd HH:mm:ss"));
+                    TimeUtil.timestampToStr(mMember.getCreated() * 1000, "yyyy-MM-dd HH:mm:ss"));
         }
+    }
+
+    private void bindView() {
+
+        mIVUserPic = findViewById(R.id.iv_user_pic);
+
+        mToolbar = findViewById(R.id.toolbar);
+
+        mTabLayout = findViewById(R.id.tab_pager);
+
+        mViewPager = findViewById(R.id.vp_content);
+
+        mCollapsingToolbar = findViewById(R.id.collapsing_toolbar);
+
+        mNumberCreated = findViewById(R.id.tv_number_created);
     }
 
     @Override

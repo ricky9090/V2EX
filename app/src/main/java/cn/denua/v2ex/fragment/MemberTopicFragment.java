@@ -23,8 +23,6 @@ import com.blankj.utilcode.util.ToastUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.denua.v2ex.R;
 import cn.denua.v2ex.adapter.TopicRecyclerViewAdapter;
 import cn.denua.v2ex.base.BaseNetworkFragment;
@@ -41,11 +39,11 @@ import cn.denua.v2ex.service.MemberService;
  */
 public class MemberTopicFragment extends BaseNetworkFragment implements ResponseListener<Member> {
 
-    @BindView(R.id.rv_topics)
+
     RecyclerView mRvTopics;
-    @BindView(R.id.swipe_refresh_layout)
+
     SwipeRefreshLayout mSwipeRefreshLayout;
-    @BindView(R.id.tv_error)
+
     TextView mTvError;
 
     private TopicRecyclerViewAdapter mRecyclerViewAdapter;
@@ -54,7 +52,7 @@ public class MemberTopicFragment extends BaseNetworkFragment implements Response
 
     private int mCurrentPage = 0;
 
-    public static MemberTopicFragment create(Member member){
+    public static MemberTopicFragment create(Member member) {
 
         MemberTopicFragment memberTopicFragment = new MemberTopicFragment();
         Bundle bundle = new Bundle();
@@ -73,11 +71,11 @@ public class MemberTopicFragment extends BaseNetworkFragment implements Response
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        if (savedView !=null){
+        if (savedView != null) {
             return savedView;
         }
         savedView = inflater.inflate(R.layout.frag_member_topic, container, false);
-        ButterKnife.bind(this, savedView);
+        bindView(savedView);
 
         mRecyclerViewAdapter = new TopicRecyclerViewAdapter(getContext(), mTopics);
         mRecyclerViewAdapter.setBottomPadding(BarUtils.getNavBarHeight());
@@ -95,6 +93,14 @@ public class MemberTopicFragment extends BaseNetworkFragment implements Response
         return savedView;
     }
 
+    private void bindView(View root) {
+        mRvTopics = root.findViewById(R.id.rv_topics);
+
+        mSwipeRefreshLayout = root.findViewById(R.id.swipe_refresh_layout);
+
+        mTvError = root.findViewById(R.id.tv_error);
+    }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -107,11 +113,11 @@ public class MemberTopicFragment extends BaseNetworkFragment implements Response
 
     }
 
-    public void onRefresh(){
-        if (mTopics.size() == 0){
+    public void onRefresh() {
+        if (mTopics.size() == 0) {
             new MemberService(this, this)
                     .getCreatedTopics(mMember, mCurrentPage);
-        }else{
+        } else {
             mSwipeRefreshLayout.setRefreshing(false);
         }
     }
@@ -123,7 +129,7 @@ public class MemberTopicFragment extends BaseNetworkFragment implements Response
 
     @Override
     public int getContextStatus() {
-        return getContext()==null
+        return getContext() == null
                 ? this.VIEW_STATUS_DESTROYED
                 : this.VIEW_STATUS_ACTIVATED;
     }
@@ -142,10 +148,11 @@ public class MemberTopicFragment extends BaseNetworkFragment implements Response
         mRecyclerViewAdapter.setHeaderView(getTopicListHeaderView(mTopics.size()));
         mRecyclerViewAdapter.notifyDataSetChanged();
     }
+
     @Override
     public boolean onFailed(String msg) {
 
-        switch (msg){
+        switch (msg) {
             case MemberService.ERR_HAS_HIDDEN:
             case MemberService.ERR_NEED_LOGIN:
                 mTvError.setVisibility(View.VISIBLE);
@@ -157,7 +164,8 @@ public class MemberTopicFragment extends BaseNetworkFragment implements Response
         }
         return true;
     }
-    private View getTopicListHeaderView(int topicCount){
+
+    private View getTopicListHeaderView(int topicCount) {
 
         TextView textView = new TextView(getContext());
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(

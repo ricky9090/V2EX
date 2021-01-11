@@ -19,8 +19,6 @@ import com.blankj.utilcode.util.ToastUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.denua.v2ex.R;
 import cn.denua.v2ex.adapter.PullRefreshReplyAdapter;
 import cn.denua.v2ex.adapter.ReplyRecyclerViewAdapter;
@@ -35,15 +33,15 @@ import cn.denua.v2ex.widget.CustomWebView;
 import cn.denua.v2ex.widget.TopicView;
 
 
-public class TopicActivity extends BaseNetworkActivity{
+public class TopicActivity extends BaseNetworkActivity {
 
     private CustomWebView mWebView;
     private TopicView mTopicView;
     private LinearLayout mLlHeader;
 
-    @BindView(R.id.refresh_layout)
+
     SwipeRefreshLayout mSwipeRefreshLayout;
-    @BindView(R.id.rv_reply)
+
     RecyclerView mRecyclerView;
 
     private int mTopicId = -1;
@@ -63,12 +61,13 @@ public class TopicActivity extends BaseNetworkActivity{
             mReplies.addAll(result);
             if (mPageCount == mCurrentPage) {
                 mPullRecyclerAdapter.setStatus(PullRefreshReplyAdapter.FooterStatus.COMPLETE);
-            }else {
+            } else {
                 mPullRecyclerAdapter.setStatus(PullRefreshReplyAdapter.FooterStatus.LOADING);
             }
             mPullRecyclerAdapter.notifyRangeChanged(
                     mReplies.size() - result.size(), result.size());
         }
+
         @Override
         public boolean onFailed(String msg) {
             ToastUtils.showShort(msg);
@@ -80,16 +79,17 @@ public class TopicActivity extends BaseNetworkActivity{
         @Override
         public void onComplete(Topic result) {
             mPageCount = result.getReplies() / 100 + 1;
-            if (mTopicId == -1 && mTopic != null && mTopic.getContent_rendered() == null){
+            if (mTopicId == -1 && mTopic != null && mTopic.getContent_rendered() == null) {
                 mTopicView.setLastTouched(TimeUtil.timestampToStr(result.getCreated()));
-            }else if (mTopicId >= 0){
+            } else if (mTopicId >= 0) {
                 mTopicView.setTopic(result);
                 mTopicView.bindData();
             }
             loadTopicContent(result.getContent_rendered());
             loadReplies(result);
         }
-        private void loadReplies(Topic result){
+
+        private void loadReplies(Topic result) {
             mTopic = result;
             mReplies.clear();
             mReplies.addAll(mTopic.getReplyList());
@@ -98,12 +98,13 @@ public class TopicActivity extends BaseNetworkActivity{
             }
             mPullRecyclerAdapter.notifyDataSetChanged();
         }
+
         @Override
         public boolean onFailed(String msg) {
 
             mSwipeRefreshLayout.setRefreshing(false);
             ToastUtils.showShort(msg);
-            if ((null != mErrorMsg) && !mErrorMsg.equals(msg)){
+            if ((null != mErrorMsg) && !mErrorMsg.equals(msg)) {
                 TextView mTvError = new TextView(TopicActivity.this);
                 mTvError.setLayoutParams(new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, 600));
@@ -120,7 +121,7 @@ public class TopicActivity extends BaseNetworkActivity{
         }
     };
 
-    private static void start(Context context, int topicId, Topic topic){
+    private static void start(Context context, int topicId, Topic topic) {
 
         Intent intent = new Intent(context, TopicActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -129,11 +130,11 @@ public class TopicActivity extends BaseNetworkActivity{
         context.startActivity(intent);
     }
 
-    public static void start(Context context, int topicId){
+    public static void start(Context context, int topicId) {
         start(context, topicId, null);
     }
 
-    public static void start(Context context, Topic topic){
+    public static void start(Context context, Topic topic) {
         start(context, -1, topic);
     }
 
@@ -141,7 +142,7 @@ public class TopicActivity extends BaseNetworkActivity{
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         mTopic = getIntent().getParcelableExtra("topic");
-        mTopicId = getIntent().getIntExtra("topicId",-1);
+        mTopicId = getIntent().getIntExtra("topicId", -1);
         initView();
     }
 
@@ -149,19 +150,26 @@ public class TopicActivity extends BaseNetworkActivity{
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_topic);
-        ButterKnife.bind(this);
+        bindView();
 
         setTitle(R.string.topic);
         mTopic = getIntent().getParcelableExtra("topic");
-        mTopicId = getIntent().getIntExtra("topicId",-1);
+        mTopicId = getIntent().getIntExtra("topicId", -1);
 
         initView();
+    }
+
+    private void bindView() {
+
+        mSwipeRefreshLayout = findViewById(R.id.refresh_layout);
+
+        mRecyclerView = findViewById(R.id.rv_reply);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (mReplies.size() == 0){
+        if (mReplies.size() == 0) {
             mSwipeRefreshLayout.setRefreshing(true);
             onRefresh();
         }
@@ -219,7 +227,7 @@ public class TopicActivity extends BaseNetworkActivity{
     /**
      * 初始化话题相关信息的 view
      */
-    private void initHeaderView(){
+    private void initHeaderView() {
 
         LinearLayout.LayoutParams linearLayoutParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -227,7 +235,7 @@ public class TopicActivity extends BaseNetworkActivity{
         mLlHeader.setGravity(Gravity.CENTER_HORIZONTAL);
         mLlHeader.setOrientation(LinearLayout.VERTICAL);
         mLlHeader.setLayoutParams(linearLayoutParams);
-        
+
         mTopicView = new TopicView(this, false);
         mTopicView.setLayoutParams(linearLayoutParams);
         mTopicView.adjustedSize();
@@ -244,11 +252,11 @@ public class TopicActivity extends BaseNetworkActivity{
         mWebView.setLoadFinishListener(this::setFontScaleAndUiScale);
         mWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
 
-        if (mTopic != null){
+        if (mTopic != null) {
             setTitle(mTopic.getTitle());
             mPageCount = mTopic.getReplies() / 100 + 1;
             mTopicView.setTopic(mTopic);
-            if (mTopic.getContent_rendered() != null){
+            if (mTopic.getContent_rendered() != null) {
                 loadTopicContent(mTopic.getContent_rendered());
             }
         }
@@ -259,24 +267,24 @@ public class TopicActivity extends BaseNetworkActivity{
         mPullRecyclerAdapter.notifyItem(0);
     }
 
-    private void onRefresh(){
+    private void onRefresh() {
 
         mCurrentPage = 1;
         mPullRecyclerAdapter.setStatus(PullRefreshReplyAdapter.FooterStatus.LOADING);
-        int topicId =(mTopicId == -1 ? mTopic.getId() : mTopicId);
+        int topicId = (mTopicId == -1 ? mTopic.getId() : mTopicId);
         TopicService.getTopicAndReply(this, topicId, 1, mTopicListener);
 
     }
 
-    private void loadNextPage(){
+    private void loadNextPage() {
 
         TopicService.getReply(this, mTopic.getId(), ++mCurrentPage, mRepliesListener);
     }
 
-    private void loadTopicContent(String content){
+    private void loadTopicContent(String content) {
 
         mWebView.loadDataWithBaseURL(null, HtmlUtil.applyHtmlStyle(content, this),
-                "text/html","utf-8",null);
+                "text/html", "utf-8", null);
     }
 
 }
