@@ -39,7 +39,6 @@ V2EX 第三方 Android 客户端
 ## 依赖的第三方库
 
 - [Retrofit 2.4.0](https://github.com/square/retrofit)
-- [ButterKnife 8.8.1](https://github.com/JakeWharton/butterknife)
 - [Gson 8.2.5 ](https://github.com/google/gson)
 - [Glide 4.5.0 ](https://github.com/bumptech/glide)
 - [Logger 2.2.0 ](https://github.com/orhanobut/logger)

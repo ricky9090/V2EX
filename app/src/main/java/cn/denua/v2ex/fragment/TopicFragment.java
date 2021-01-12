@@ -17,8 +17,6 @@ import com.blankj.utilcode.util.ToastUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.denua.v2ex.Config;
 import cn.denua.v2ex.R;
 import cn.denua.v2ex.Tab;
@@ -34,12 +32,11 @@ import cn.denua.v2ex.service.TopicService;
 public class TopicFragment extends BaseNetworkFragment implements ResponseListener<List<Topic>> {
 
     static public String TAG = "TopicFragment";
-    static
-    private RecyclerView.RecycledViewPool sRecyclerViewPool = new RecyclerView.RecycledViewPool();
+    static private RecyclerView.RecycledViewPool sRecyclerViewPool = new RecyclerView.RecycledViewPool();
 
-    @BindView(R.id.refresh_layout)
+
     SwipeRefreshLayout swipeRefreshLayout;
-    @BindView(R.id.rv_topics)
+
     RecyclerView recyclerView;
 
     private PullRefreshReplyAdapter mAdapter;
@@ -58,6 +55,7 @@ public class TopicFragment extends BaseNetworkFragment implements ResponseListen
             mAdapter.setStatus(PullRefreshReplyAdapter.FooterStatus.LOADING);
             mAdapter.notifyRangeInserted(topics.size() - result.size(), result.size());
         }
+
         @Override
         public boolean onFailed(String msg) {
             ToastUtils.showShort(msg);
@@ -65,7 +63,7 @@ public class TopicFragment extends BaseNetworkFragment implements ResponseListen
         }
     };
 
-    public static TopicFragment create(Tab contentType){
+    public static TopicFragment create(Tab contentType) {
         TopicFragment topicFragment = new TopicFragment();
         Bundle bundle = new Bundle();
         bundle.putSerializable("contentType", contentType);
@@ -76,7 +74,7 @@ public class TopicFragment extends BaseNetworkFragment implements ResponseListen
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if ( getArguments() != null){
+        if (getArguments() != null) {
             this.mTabType = (Tab) getArguments().getSerializable("contentType");
         }
         topicService = new TopicService(this, this);
@@ -90,9 +88,8 @@ public class TopicFragment extends BaseNetworkFragment implements ResponseListen
         if (this.savedView != null)
             return savedView;
 
-        savedView = inflater.inflate(R.layout.frag_topic, container,false);
-
-        ButterKnife.bind(this, savedView);
+        savedView = inflater.inflate(R.layout.frag_topic, container, false);
+        bindView(savedView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
@@ -112,20 +109,25 @@ public class TopicFragment extends BaseNetworkFragment implements ResponseListen
 
         setSwipeRefreshTheme(swipeRefreshLayout);
         swipeRefreshLayout.setRefreshing(true);
-        if (mTabType.getType() == TabEnum.NODE){
+        if (mTabType.getType() == TabEnum.NODE) {
             mAdapter.setOnPullUpListener(() -> {
-                mCurrentPage ++;
+                mCurrentPage++;
                 TopicService.getTopicByNode(this, mTabType.getTitle(),
                         mCurrentPage, mResponseListener);
             });
-        }else{
+        } else {
             mAdapter.setStatus(PullRefreshReplyAdapter.FooterStatus.COMPLETE);
         }
         return savedView;
     }
 
+    private void bindView(View root) {
+        swipeRefreshLayout = root.findViewById(R.id.refresh_layout);
+        recyclerView = root.findViewById(R.id.rv_topics);
+    }
+
     public void onRefresh() {
-        if (mIsNeedLogin && !Config.getAccount().isLogin()){
+        if (mIsNeedLogin && !Config.getAccount().isLogin()) {
             ToastUtils.showShort(R.string.not_login);
             return;
         }
@@ -137,7 +139,7 @@ public class TopicFragment extends BaseNetworkFragment implements ResponseListen
 
         topics.clear();
         topics.addAll(result);
-        if (mAdapter != null){
+        if (mAdapter != null) {
             mAdapter.notifyDataSetChanged();
         }
     }
@@ -150,16 +152,16 @@ public class TopicFragment extends BaseNetworkFragment implements ResponseListen
 
     @Override
     public int getContextStatus() {
-        return (isDetached()||isRemoving()) ? VIEW_STATUS_DESTROYED : VIEW_STATUS_ACTIVATED;
+        return (isDetached() || isRemoving()) ? VIEW_STATUS_DESTROYED : VIEW_STATUS_ACTIVATED;
     }
 
     @Override
     public boolean onFailed(String msg) {
 
         Toast.makeText(getContext(), msg + ", " + mTabType.getTitle(), Toast.LENGTH_SHORT).show();
-        if(msg.equals(ErrorEnum.ERR_PAGE_NEED_LOGIN.getReadable())){
+        if (msg.equals(ErrorEnum.ERR_PAGE_NEED_LOGIN.getReadable())) {
             mIsNeedLogin = true;
-        }else{
+        } else {
             ToastUtils.showShort(msg);
         }
         return true;

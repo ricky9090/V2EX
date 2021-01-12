@@ -30,20 +30,9 @@
 -keep public class * extends android.app.Fragment
 
 
--keep class butterknife.** { *; }
--dontwarn butterknife.internal.**
--keep class **$$ViewBinder { *; }
 
--keepclasseswithmembernames class * {
-    @butterknife.* <fields>;
-}
-
--keepclasseswithmembernames class * {
-    @butterknife.* <methods>;
-}
-
--dontwarn com.tencent.bugly.**
--keep public class com.tencent.bugly.**{*;}
+# -dontwarn com.tencent.bugly.**
+# -keep public class com.tencent.bugly.**{*;}
 
 # Platform calls Class.forName on types which do not exist on Android to determine platform.
 -dontnote retrofit2.Platform

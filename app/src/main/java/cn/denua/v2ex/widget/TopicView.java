@@ -12,8 +12,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.denua.v2ex.Config;
 import cn.denua.v2ex.ConfigRefEnum;
 import cn.denua.v2ex.R;
@@ -31,27 +29,23 @@ import cn.denua.v2ex.utils.TimeUtil;
  */
 public class TopicView extends FrameLayout {
 
-    @BindView(R.id.tv_title)
+
     TextView tvTitle;
 
-    @BindView(R.id.tv_reply)
+
     TextView tvReply;
-    @BindView(R.id.tv_latest_touched)
+
     TextView tvLastTouched;
-    @BindView(R.id.tv_node)
+
     TextView tvNode;
 
     @Nullable
-    @BindView(R.id.iv_user_pic)
     ImageView ivUserPic;
     @Nullable
-    @BindView(R.id.tv_username)
     TextView tvUsername;
     @Nullable
-    @BindView(R.id.tv_last_reply)
     TextView tvLastReply;
     @Nullable
-    @BindView(R.id.tv_up_vote)
     TextView tvUpVote;
 
     private Context context;
@@ -68,7 +62,10 @@ public class TopicView extends FrameLayout {
         this.isSimpleView = isSimpleView;
         this.context = context;
         initView(context);
-        tvTitle.setOnTouchListener((v,e)->{onTouchEvent(e);return false;});
+        tvTitle.setOnTouchListener((v, e) -> {
+            onTouchEvent(e);
+            return false;
+        });
     }
 
 
@@ -79,17 +76,33 @@ public class TopicView extends FrameLayout {
         initView(context);
     }
 
-    private void initView(Context context){
+    private void bindView() {
+        tvTitle = findViewById(R.id.tv_title);
 
+        tvReply = findViewById(R.id.tv_reply);
+        tvLastTouched = findViewById(R.id.tv_latest_touched);
+        tvNode = findViewById(R.id.tv_node);
+
+        ivUserPic = findViewById(R.id.iv_user_pic);
+
+        tvUsername = findViewById(R.id.tv_username);
+
+        tvLastReply = findViewById(R.id.tv_last_reply);
+
+        tvUpVote = findViewById(R.id.tv_up_vote);
+    }
+
+    private void initView(Context context) {
         mIsChineseNodeLabel = Config.getConfig(ConfigRefEnum.CONFIG_NODE_NAME_INSTEAD_TITLE);
         mIsShowCreateDate = Config.getConfig(ConfigRefEnum.CONFIG_TOPIC_CREATE_INSTEAD_TOUCHED);
         inflate(context, isSimpleView
-                            ?R.layout.view_member_topic
-                            :R.layout.view_topic, this);
-        ButterKnife.bind(this);
+                ? R.layout.view_member_topic
+                : R.layout.view_topic, this);
+
+        bindView();
     }
 
-    public void adjustedSize(){
+    public void adjustedSize() {
         tvTitle.setMaxLines(100);
     }
 
@@ -99,20 +112,20 @@ public class TopicView extends FrameLayout {
 //        if (topic != null && !isStop && visibility == VISIBLE && getContext() != null)  bindViewWithTopic();
     }
 
-    public void setLastTouched(String lastTouched){
+    public void setLastTouched(String lastTouched) {
         tvLastTouched.setText(lastTouched);
     }
 
-    public void  setTopic(Topic topic) {
+    public void setTopic(Topic topic) {
         this.topic = topic;
         try {
             bindViewWithTopic();
-        }catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
     }
 
-    public void bindData(){
+    public void bindData() {
         bindViewWithTopic();
     }
 
@@ -123,14 +136,14 @@ public class TopicView extends FrameLayout {
         isStop = true;
     }
 
-    private void bindViewWithTopic(){
+    private void bindViewWithTopic() {
 
         tvTitle.setText(topic.getTitle());
         tvReply.setText(String.format(getResources().getString(R.string.place_holder_reply),
                 topic.getReplies()));
-        if (topic.getNode().getTitle().equals("")){
+        if (topic.getNode().getTitle().equals("")) {
             tvNode.setVisibility(INVISIBLE);
-        }else {
+        } else {
             tvNode.setText(!mIsChineseNodeLabel
                     ? topic.getNode().getName()
                     : topic.getNode().getTitle());
@@ -143,7 +156,7 @@ public class TopicView extends FrameLayout {
                 tvLastReply.setText(topic.getLast_reply_by());
             }
             if (tvUpVote != null) {
-                tvUpVote.setText(topic.getUpVote()==0?"":String.valueOf(topic.getUpVote()));
+                tvUpVote.setText(topic.getUpVote() == 0 ? "" : String.valueOf(topic.getUpVote()));
             }
             return;
         }
@@ -153,9 +166,9 @@ public class TopicView extends FrameLayout {
         if (tvUsername != null) {
             tvUsername.setText(topic.getMember().getUsername());
         }
-        if (topic.getCreated() == 0 && topic.getAgo() != null){
+        if (topic.getCreated() == 0 && topic.getAgo() != null) {
             tvLastTouched.setText(topic.getAgo());
-        }else if (topic.getCreated() != 0){
+        } else if (topic.getCreated() != 0) {
             tvLastTouched.setText(TimeUtil.timestampToStr(
                     mIsShowCreateDate ? topic.getCreated() : topic.getLast_touched()));
         }
@@ -170,12 +183,12 @@ public class TopicView extends FrameLayout {
         super.onLayout(changed, left, top, right, bottom);
     }
 
-    private void goToUserDetail(){
+    private void goToUserDetail() {
 
         UserDetailActivity.start(context, topic.getMember());
     }
 
-    private void goToNodeDetail(){
+    private void goToNodeDetail() {
 
         NodeActivity.start(context, topic.getNode());
     }

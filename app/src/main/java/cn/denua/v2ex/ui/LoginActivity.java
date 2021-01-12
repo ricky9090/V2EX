@@ -12,15 +12,12 @@ import android.widget.ProgressBar;
 
 import com.blankj.utilcode.util.ToastUtils;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+import cn.denua.v2ex.Config;
 import cn.denua.v2ex.R;
 import cn.denua.v2ex.base.BaseNetworkActivity;
 import cn.denua.v2ex.interfaces.NextResponseListener;
 import cn.denua.v2ex.model.Account;
 import cn.denua.v2ex.service.UserService;
-import cn.denua.v2ex.Config;
 import cn.denua.v2ex.utils.DialogUtil;
 
 /*
@@ -29,7 +26,7 @@ import cn.denua.v2ex.utils.DialogUtil;
  * @author denua
  * @date 2018/10/20
  */
-public class LoginActivity extends BaseNetworkActivity implements NextResponseListener<Bitmap,Account> {
+public class LoginActivity extends BaseNetworkActivity implements NextResponseListener<Bitmap, Account> {
 
     public static final int RESULT_SUCCESS = 6;
 
@@ -48,13 +45,12 @@ public class LoginActivity extends BaseNetworkActivity implements NextResponseLi
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_login);
-        ButterKnife.bind(this);
         bindView();
 
         setTitle(R.string.login);
         mProgressDialog = DialogUtil.getProgress(this,
                 getResources().getString(R.string.logging_in), null);
-        loginService = new UserService(this,this);
+        loginService = new UserService(this, this);
         loginService.preLogin();
         ivCaptcha.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
@@ -85,21 +81,21 @@ public class LoginActivity extends BaseNetworkActivity implements NextResponseLi
     }
 
 
-    public void login(){
+    public void login() {
 
         String mAccount = etAccount.getText().toString().trim();
         String mPassword = etPassword.getText().toString().trim();
         String mCaptcha = etCaptchaCode.getText().toString().trim();
 
-        if (mAccount.equals("")){
+        if (mAccount.equals("")) {
             etAccount.setError(getString(R.string.username_format_error));
             return;
         }
-        if (mPassword.equals("")){
+        if (mPassword.equals("")) {
             etPassword.setError(getString(R.string.password_format_error));
             return;
         }
-        if (mCaptcha.equals("")){
+        if (mCaptcha.equals("")) {
             etCaptchaCode.setError(getString(R.string.captcha_format_error));
             return;
         }
@@ -112,7 +108,7 @@ public class LoginActivity extends BaseNetworkActivity implements NextResponseLi
     }
 
 
-    public void refresh(ImageView view){
+    public void refresh(ImageView view) {
         loginService.preLogin();
         ivCaptcha.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
@@ -151,7 +147,7 @@ public class LoginActivity extends BaseNetworkActivity implements NextResponseLi
     View.OnKeyListener onNextKey = new View.OnKeyListener() {
         @Override
         public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
-            if(keyCode == KeyEvent.KEYCODE_ENTER){
+            if (keyCode == KeyEvent.KEYCODE_ENTER) {
                 login();
                 return true;
             }

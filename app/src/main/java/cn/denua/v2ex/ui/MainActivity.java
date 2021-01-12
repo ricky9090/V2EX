@@ -28,8 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.denua.v2ex.Config;
 import cn.denua.v2ex.ConfigRefEnum;
 import cn.denua.v2ex.R;
@@ -51,15 +49,11 @@ public class MainActivity extends BaseNetworkActivity implements NavigationView.
     private final String TAG = "MainActivity";
     private final int LOGIN_REQUEST_CODE = 100;
 
-    @BindView(R.id.toolbar)
+
     Toolbar toolbar;
-    @BindView(R.id.navigation)
     NavigationView navigationView;
-    @BindView(R.id.drawer)
     DrawerLayout drawerLayout;
-    @BindView(R.id.view_pager)
     ViewPager viewPager;
-    @BindView(R.id.view_pager_tab)
     TabLayout tabLayout;
 
     private ImageView ivUserPic;
@@ -88,13 +82,21 @@ public class MainActivity extends BaseNetworkActivity implements NavigationView.
         setContentView(R.layout.act_main);
 
         mAccount = Config.getAccount();
-        ButterKnife.bind(this);
+        bindView();
         initView();
         if (mAccount.isLogin()) {
             checkDailySignIn();
         } else {
             checkLoginAndSignStatus();
         }
+    }
+
+    private void bindView() {
+        toolbar = findViewById(R.id.toolbar);
+        navigationView = findViewById(R.id.navigation);
+        drawerLayout = findViewById(R.id.drawer);
+        viewPager = findViewById(R.id.view_pager);
+        tabLayout = findViewById(R.id.view_pager_tab);
     }
 
     protected void initView() {
